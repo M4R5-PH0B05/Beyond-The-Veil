@@ -61,7 +61,7 @@ public class CharacterController : MonoBehaviour
     /// </summary>
     [SerializeField] private LayerMask m_grappleLayerMask;
 
-    private float CR_Timer;
+    private bool m_grappling;
 
     void Awake()
     {
@@ -87,7 +87,6 @@ public class CharacterController : MonoBehaviour
     {
         //adds the move to position
         transform.position += new Vector3(m_playerDirection.x * m_moveSpeed, m_playerDirection.y * m_moveSpeed, 0);
-
     }
 
     /// <header> Charecter Inputs </header>
@@ -141,22 +140,12 @@ public class CharacterController : MonoBehaviour
     /// <param name="ctx"></param>
     public void GrappleInput(InputAction.CallbackContext ctx)
     {
-        Grapple();
+        for (int i = 0; i <  10000; i++)
+        {
+            Grapple();
+        }
     }
 
-    IEnumerable CR_KeepGrappling(RaycastHit2D grappleHit)
-    {
-        while (CR_Timer < 5f)
-        {
-            if (grappleHit && m_maskState == MaskState.grapple)
-            {
-                transform.position = Vector2.MoveTowards(transform.position, grappleHit.point, 0.1f);
-            }
-            CR_Timer += Time.deltaTime;
-        }
-        CR_Timer = 0;
-        yield return null;
-    }
     
 
     private void Grapple()
@@ -166,8 +155,9 @@ public class CharacterController : MonoBehaviour
         Debug.DrawRay(this.transform.position, grappleDirection, Color.red, 10);
         //casts the acctual ray to whereever the mosue is on screen, ignores the player to stop bugs
         RaycastHit2D grappleHit = Physics2D.Raycast(this.transform.position, grappleDirection, 10, m_grappleLayerMask);
-        StartCoroutine(CR_KeepGrappling(grappleHit));
+        Debug.Log(grappleHit.transform.gameObject.name);
+        transform.position = Vector2.MoveTowards(transform.position, grappleHit.point, 0.1f * Time.deltaTime);
+        m_grappling = true;
     }
-
 
 }
