@@ -1,4 +1,5 @@
 using System.Dynamic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -29,11 +30,19 @@ public class CharacterController : MonoBehaviour
     /// The jump input action
     /// </summary>
     private InputAction m_jump;
+    /// <summary>
+    /// The Players Rigidbody2D
+    /// </summary>
+    private Rigidbody2D RB2D;
 
     /// <summary>
     /// The currently selectedMask
     /// </summary>
     private MaskState m_maskState;
+
+    private bool m_canjump = false;
+    private float m_jumpcooldown = 0.1f;
+    private float m_jumptimeout;
 
     /// <summary>
     /// Defined for the velocity player jumps 
@@ -44,12 +53,17 @@ public class CharacterController : MonoBehaviour
     /// Defined for the velocity player moves 
     /// </summary>
     [SerializeField] private float m_moveSpeed;
-
+    /// <summary>
+    /// 
+    /// </summary>
+    private int m_jumpcounter = 1;
 
     void Awake()
     {
         m_move = InputSystem.actions.FindAction("Move");
         m_jump = InputSystem.actions.FindAction("Jump");
+        // Gets players rigidbody
+        RB2D = GetComponent < Rigidbody2D > ();
         
     }
 
@@ -79,9 +93,12 @@ public class CharacterController : MonoBehaviour
     /// <param name="ctx"></param>
     public void HandleMove(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
+        // makes it so player cant jump with W key
+        if (ctx.performed && ctx.ReadValue<Vector2>().y <= 0)
         {
-            m_playerDirection = ctx.ReadValue<Vector2>();
+            
+                m_playerDirection = ctx.ReadValue<Vector2>();
+            
         }
         else if (ctx.canceled)
         {
@@ -96,7 +113,28 @@ public class CharacterController : MonoBehaviour
     /// <param name="ctx"></param>
     public void HandleJump(InputAction.CallbackContext ctx)
     {
-        this.transform.position += new Vector3(0,1 * m_jumpSpeed,0);
+        
+        if (RB2D.linearVelocityY < 0.001 && RB2D.linearVelocityY > -0.001)
+        {
+            if (m_maskState == MaskState.doubleJump)
+            {
+                m_jumpcounter = 2;
+            }
+            else if (m_maskState != MaskState.doubleJump)
+            {
+                m_jumpcounter = 1;
+            }
+        }
+        if (m_jumpcounter > 0 && Time.time > m_jumptimeout)
+        {
+            m_jumpcounter--;
+            RB2D.AddForce(new Vector2(0, 15 * m_jumpSpeed), ForceMode2D.Impulse);
+            m_jumptimeout = Time.time + m_jumpcooldown;
+            
+
+            
+        }
+          
     }
 
     public void HandleMaskSwitchDJump(InputAction.CallbackContext ctx)
