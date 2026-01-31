@@ -263,18 +263,21 @@ public class CharacterController : MonoBehaviour
     {
             m_maskState = MaskState.doubleJump;
             grappleController.m_maskState = MaskState.doubleJump;
+            m_disableDisappearingTiles.Invoke();
     }
 
     public void HandleMaskSwitchGrapple(InputAction.CallbackContext ctx)
     {
             m_maskState = MaskState.grapple;
             grappleController.m_maskState = MaskState.grapple;
+            m_disableDisappearingTiles.Invoke();
     }
 
     public void HandleMaskSwitchWall(InputAction.CallbackContext ctx)
     {
             m_maskState = MaskState.wallTangibility;
             grappleController.m_maskState = MaskState.wallTangibility;
+            m_enableDisappearingTiles.Invoke();
     }
 
     /// <summary>
@@ -283,19 +286,14 @@ public class CharacterController : MonoBehaviour
     /// <param name="ctx"></param>
     public void HandleInteract(InputAction.CallbackContext ctx)
     {
-        switch (m_maskState)
+        if (ctx.started && m_maskState == MaskState.wallTangibility)
         {
-            case MaskState.wallTangibility:
-                m_toggleDisappearingTiles.Invoke();
-                break;
-
-            case MaskState.grapple:
-                grappleController.m_grappling = true;
-                grappleController.GrappleRayCast();
-                break;
-
-            default:
-                break;
+            m_toggleDisappearingTiles.Invoke();
+        }
+        else if (ctx.performed && m_maskState == MaskState.grapple)
+        {
+            grappleController.m_grappling = true;
+            grappleController.GrappleRayCast();
         }
     }
 }
