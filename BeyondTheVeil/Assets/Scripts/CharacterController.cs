@@ -222,7 +222,15 @@ public class CharacterController : MonoBehaviour
         if (Cr_HandleJumpInstance == null && m_jumpCounter >= 1)
         {
             Cr_HandleJumpInstance = StartCoroutine(CR_HandleJump(ctx));
-            m_jumpCounter--;
+            if (Physics2D.Raycast(this.transform.position, Vector2.down, 0.1f))//if the player is on the ground reset jump counter
+            {
+                return;
+            }
+            else
+            {
+                m_jumpCounter--;
+            }
+                
         }
     }
 
