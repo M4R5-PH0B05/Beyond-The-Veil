@@ -20,7 +20,6 @@ public class CharacterController : MonoBehaviour
         wallTangibility = 3
     }
 
-
     /// <summary>
     /// The player direction
     /// </summary>
@@ -30,15 +29,20 @@ public class CharacterController : MonoBehaviour
     /// The move input action
     /// </summary>
     private InputAction m_move;
+
     /// <summary>
     /// The jump input action
     /// </summary>
     private InputAction m_jump;
+
     /// <summary>
     /// The Players Rigidbody2D
     /// </summary>
     private Rigidbody2D RB2D;
 
+    /// <summary>
+    /// Interact action
+    /// </summary>
     private InputAction m_interact;
 
     /// <summary>
@@ -97,9 +101,11 @@ public class CharacterController : MonoBehaviour
 
     void Awake()
     {
-
+        DontDestroyOnLoad(gameObject);
+        //Initialising Inputs
         m_move = InputSystem.actions.FindAction("Move");
         m_jump = InputSystem.actions.FindAction("Jump");
+        //getting references to gameobjects
         RB2D = gameObject.GetComponent<Rigidbody2D>();
         m_disappearingTileManager = FindObjectOfType<DisappearingTileManager>();
         gameObject.GetComponent<Rigidbody2D>().freezeRotation = true;
@@ -114,7 +120,6 @@ public class CharacterController : MonoBehaviour
         m_enableDisappearingTiles.AddListener(() => m_disappearingTileManager.EnableDisappearingTiles());
         m_disableDisappearingTiles = new UnityEvent();
         m_disableDisappearingTiles.AddListener(() => m_disappearingTileManager.DisableDisappearingTiles());
-
     }
 
     private void FixedUpdate()
@@ -125,16 +130,11 @@ public class CharacterController : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, m_grappleHit.point, 15f * Time.deltaTime);
         }
-
-
-
         //takes the current mouse position from the current player position compared to the camera
         Vector2 grappleDirection = m_MainCamera.ScreenToWorldPoint(new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0)) - this.transform.position;
         Debug.DrawRay(this.transform.position, grappleDirection, Color.red, 10);
         //casts the acctual ray to whereever the mouse is on screen, ignores the player to stop bugs
         m_grappleHit = Physics2D.Raycast(this.transform.position, grappleDirection, 10, m_grappleLayerMask);
-
-
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
