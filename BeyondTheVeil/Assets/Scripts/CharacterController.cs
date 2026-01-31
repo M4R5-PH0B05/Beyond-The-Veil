@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class CharacterController : MonoBehaviour
 {
@@ -52,31 +52,42 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private float m_moveSpeed;
 
     /// <summary>
-    /// Current Active Camera in the scene
+    /// An event which toggles if the walls are visable or not
     /// </summary>
-    [SerializeField] private Camera m_MainCamera;
+    UnityEvent m_toggleDisappearingTiles;
+    /// <summary>
+    /// Enables the disappearing tiles
+    /// </summary>
+    UnityEvent m_enableDisappearingTiles;
+    /// <summary>
+    /// Disables the disappearing tiles
+    /// </summary>
+    UnityEvent m_disableDisappearingTiles;
 
     /// <summary>
-    /// provides a layer mask for what player's grapple acctual is able to hit (specific layers)
+    /// The manager for the disappearing tiles
     /// </summary>
-    [SerializeField] private LayerMask m_grappleLayerMask;
-
-    private bool m_grappling;
-
-    private RaycastHit2D m_grappleHit;
+    private DisappearingTileManager m_disappearingTileManager;
 
     void Awake()
     {
         m_move = InputSystem.actions.FindAction("Move");
         m_jump = InputSystem.actions.FindAction("Jump");
-        this.GetComponent<Rigidbody2D>().freezeRotation = true;
+
+        m_disappearingTileManager = FindObjectOfType<DisappearingTileManager>();
 
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        m_toggleDisappearingTiles = new UnityEvent();
+        m_toggleDisappearingTiles.AddListener(() => m_disappearingTileManager.ToggleDisappearingTiles());
+        m_enableDisappearingTiles = new UnityEvent();
+        m_enableDisappearingTiles.AddListener(() => m_disappearingTileManager.EnableDisappearingTiles());
+        m_disableDisappearingTiles = new UnityEvent();
+        m_disableDisappearingTiles.AddListener(() => m_disappearingTileManager.DisableDisappearingTiles());
+
     }
 
     // Update is called once per frame
@@ -139,20 +150,44 @@ public class CharacterController : MonoBehaviour
 
     public void HandleMaskSwitchDJump(InputAction.CallbackContext ctx)
     {
-        m_maskState = MaskState.doubleJump;
-        Debug.Log("double jump");
+        if (ctx.performed)
+        {
+            m_maskState = MaskState.doubleJump;
+            Debug.Log("double jump");
+            m_disableDisappearingTiles.Invoke();
+        }
     }
 
     public void HandleMaskSwitchGrapple(InputAction.CallbackContext ctx)
     {
-        m_maskState = MaskState.grapple;
-        Debug.Log("grapple");
+        if (ctx.performed)
+        {
+            m_maskState = MaskState.grapple;
+            Debug.Log("grapple");
+            m_disableDisappearingTiles.Invoke();
+        }
     }
 
     public void HandleMaskSwitchWall(InputAction.CallbackContext ctx)
     {
-        m_maskState = MaskState.wallTangibility;
-        Debug.Log("wall");
+        if (ctx.performed)
+        {
+            m_maskState = MaskState.wallTangibility;
+            Debug.Log("wall");
+            m_enableDisappearingTiles.Invoke();
+        }
+    }
+
+    public void HandleInteract(InputAction.CallbackContext ctx)
+    {
+        if(ctx.started)
+        {
+            if (m_maskState == MaskState.wallTangibility)
+            {
+                m_toggleDisappearingTiles.Invoke();
+            }
+            Debug.Log("interact");
+        }
     }
 
     /// <summary>
