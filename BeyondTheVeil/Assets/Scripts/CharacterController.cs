@@ -275,6 +275,7 @@ public class CharacterController : MonoBehaviour
             
             Cr_HandleJumpInstance = StartCoroutine(CR_HandleJump(ctx));
             m_playerAnimation.SetBool("Jumping", true);
+            m_playerAnimation.SetBool("Grounded", false);
             if (Physics2D.Raycast(this.transform.position, Vector2.down, 0.1f, m_layerMask))//if the player is on the ground reset jump counter
             {
                 return;
@@ -315,6 +316,7 @@ public class CharacterController : MonoBehaviour
             {
               
                 m_playerAnimation.SetBool("Jumping", false);
+                m_playerAnimation.SetBool("Grounded", true);
 
                 if (m_maskState == MaskState.doubleJump)
                 {
