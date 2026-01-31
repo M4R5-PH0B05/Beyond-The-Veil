@@ -950,7 +950,7 @@ Animator:
   m_GameObject: {fileID: 196928980}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e9c0c9e7c525f9043a8e0a59ffd866a9, type: 2}
+  m_Controller: {fileID: 9100000, guid: fa23308e9be84a741b3f0c0f767d8a39, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -996,7 +996,7 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.21133333}
+  m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
 --- !u!1 &519420028
 GameObject:
