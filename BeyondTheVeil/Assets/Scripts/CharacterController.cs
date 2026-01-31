@@ -303,7 +303,7 @@ public class CharacterController : MonoBehaviour
         Cr_HandleJumpInstance = null;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionStay2D(Collision2D collision)
     {
         //for every object the player is colliding with, if it is the ground reset jump counter
         foreach (ContactPoint2D contact in collision.contacts)
