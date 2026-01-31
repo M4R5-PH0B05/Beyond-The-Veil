@@ -19,12 +19,22 @@ public class DisappearingTile : MonoBehaviour
     /// <summary>
     /// The sprite used when the tile is active
     /// </summary>
-    [SerializeField] private Sprite activeSprite;
+    [SerializeField] private Sprite m_activeSprite;
 
     /// <summary>
     /// The sprite used when this tile is inactive
     /// </summary>
-    [SerializeField] private Sprite inactiveSprite;
+    [SerializeField] private Sprite m_inactiveSprite;
+
+    /// <summary>
+    /// The sprite used when the tile is disabled, if invisable set to null
+    /// </summary>
+    [SerializeField] private Sprite m_disabledSprite;
+
+    /// <summary>
+    /// This determines if the tile is collidable by default (including if there is no wall mask applied)
+    /// </summary>
+    [SerializeField] private bool m_collisionsOnDefault;
 
     /// <summary>
     /// The sprite renderer for this tile
@@ -40,6 +50,12 @@ public class DisappearingTile : MonoBehaviour
     {
         m_spriteRenderer = GetComponent<SpriteRenderer>();
         m_collider = GetComponent<BoxCollider2D>();
+    }
+
+    void Start()
+    {
+        //set to initial state
+        DisableTile();
     }
 
     /// <summary>
@@ -81,9 +97,16 @@ public class DisappearingTile : MonoBehaviour
     /// </summary>
     public void DisableTile()
     {
-        m_collider.enabled = false;
+        if (m_collisionsOnDefault)
+        {
+            m_collider.enabled = true;
+        }
+        else
+        {
+            m_collider.enabled = false;
+        }
         m_enabled = false;
-        m_spriteRenderer.sprite = null;
+        m_spriteRenderer.sprite = m_disabledSprite;
     }
 
     /// <summary>
@@ -91,8 +114,15 @@ public class DisappearingTile : MonoBehaviour
     /// </summary>
     private void ActivateTile()
     {
-        m_collider.enabled = true;
-        m_spriteRenderer.sprite = activeSprite;
+        if (m_collisionsOnDefault)
+        {
+            m_collider.enabled = false;
+        }
+        else
+        {
+            m_collider.enabled = true;
+        }
+        m_spriteRenderer.sprite = m_activeSprite;
     }
 
     /// <summary>
@@ -100,7 +130,14 @@ public class DisappearingTile : MonoBehaviour
     /// </summary>
     private void DeactivateTile()
     {
-        m_collider.enabled = false;
-        m_spriteRenderer.sprite = inactiveSprite;
+        if (m_collisionsOnDefault)
+        {
+            m_collider.enabled = true;
+        }
+        else
+        {
+            m_collider.enabled = false;
+        }
+        m_spriteRenderer.sprite = m_inactiveSprite;
     }
 }

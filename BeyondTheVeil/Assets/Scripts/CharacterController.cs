@@ -246,17 +246,22 @@ public class CharacterController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.contacts[0].normal.y > 0)//if the player collides with the ground from above resets jumps appropriately
+        //for every object the player is colliding with, if it is the ground reset jump counter
+        foreach (ContactPoint2D contact in collision.contacts)
         {
-            if (m_maskState == MaskState.doubleJump)
+            if (contact.normal.y > 0)//if the player collides with the ground from above resets jumps appropriately
             {
-                m_jumpCounter = 2;
-            }
-            else if (m_maskState != MaskState.doubleJump)
-            {
-                m_jumpCounter = 1;
+                if (m_maskState == MaskState.doubleJump)
+                {
+                    m_jumpCounter = 2;
+                }
+                else if (m_maskState != MaskState.doubleJump)
+                {
+                    m_jumpCounter = 1;
+                }
             }
         }
+
     }
 
     public void HandleMaskSwitchDJump(InputAction.CallbackContext ctx)
