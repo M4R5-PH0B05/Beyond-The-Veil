@@ -20,7 +20,6 @@ public class CharacterController : MonoBehaviour
         wallTangibility = 3
     }
 
-
     /// <summary>
     /// The player direction
     /// </summary>
@@ -30,15 +29,20 @@ public class CharacterController : MonoBehaviour
     /// The move input action
     /// </summary>
     private InputAction m_move;
+
     /// <summary>
     /// The jump input action
     /// </summary>
     private InputAction m_jump;
+
     /// <summary>
     /// The Players Rigidbody2D
     /// </summary>
     private Rigidbody2D RB2D;
 
+    /// <summary>
+    /// Interact action
+    /// </summary>
     private InputAction m_interact;
 
     /// <summary>
@@ -96,9 +100,11 @@ public class CharacterController : MonoBehaviour
 
     void Awake()
     {
-
+        DontDestroyOnLoad(gameObject);
+        //Initialising Inputs
         m_move = InputSystem.actions.FindAction("Move");
         m_jump = InputSystem.actions.FindAction("Jump");
+        //getting references to gameobjects
         RB2D = gameObject.GetComponent<Rigidbody2D>();
         m_disappearingTileManager = FindObjectOfType<DisappearingTileManager>();
         gameObject.GetComponent<Rigidbody2D>().freezeRotation = true;
@@ -113,7 +119,6 @@ public class CharacterController : MonoBehaviour
         m_enableDisappearingTiles.AddListener(() => m_disappearingTileManager.EnableDisappearingTiles());
         m_disableDisappearingTiles = new UnityEvent();
         m_disableDisappearingTiles.AddListener(() => m_disappearingTileManager.DisableDisappearingTiles());
-
     }
 
     private void FixedUpdate()
