@@ -1,7 +1,10 @@
+using System.Collections;
 using System.Dynamic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 
 public class CharacterController : MonoBehaviour
 {
@@ -35,6 +38,8 @@ public class CharacterController : MonoBehaviour
     /// </summary>
     private Rigidbody2D RB2D;
 
+    private InputAction m_interact;
+
     /// <summary>
     /// The currently selectedMask
     /// </summary>
@@ -53,24 +58,44 @@ public class CharacterController : MonoBehaviour
     /// Defined for the velocity player moves 
     /// </summary>
     [SerializeField] private float m_moveSpeed;
+
     /// <summary>
-    /// 
+    /// An event which toggles if the walls are visable or not
     /// </summary>
-    private int m_jumpcounter = 1;
+    UnityEvent m_toggleDisappearingTiles;
+    /// <summary>
+    /// Enables the disappearing tiles
+    /// </summary>
+    UnityEvent m_enableDisappearingTiles;
+    /// <summary>
+    /// Disables the disappearing tiles
+    /// </summary>
+    UnityEvent m_disableDisappearingTiles;
+
+    /// <summary>
+    /// The manager for the disappearing tiles
+    /// </summary>
+    private DisappearingTileManager m_disappearingTileManager;
 
     void Awake()
     {
         m_move = InputSystem.actions.FindAction("Move");
         m_jump = InputSystem.actions.FindAction("Jump");
-        // Gets players rigidbody
-        RB2D = GetComponent < Rigidbody2D > ();
-        
+
+        m_disappearingTileManager = FindObjectOfType<DisappearingTileManager>();
+
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        m_toggleDisappearingTiles = new UnityEvent();
+        m_toggleDisappearingTiles.AddListener(() => m_disappearingTileManager.ToggleDisappearingTiles());
+        m_enableDisappearingTiles = new UnityEvent();
+        m_enableDisappearingTiles.AddListener(() => m_disappearingTileManager.EnableDisappearingTiles());
+        m_disableDisappearingTiles = new UnityEvent();
+        m_disableDisappearingTiles.AddListener(() => m_disappearingTileManager.DisableDisappearingTiles());
+
     }
 
     // Update is called once per frame
@@ -83,9 +108,28 @@ public class CharacterController : MonoBehaviour
     {
         //adds the move to position
         transform.position += new Vector3(m_playerDirection.x * m_moveSpeed, m_playerDirection.y * m_moveSpeed, 0);
+        if (m_grappling == true)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, m_grappleHit.point, 15f * Time.deltaTime);
+        }
+        else 
+        {
+            //takes the current mouse position from the current player position compared to the camera
+            Vector2 grappleDirection = m_MainCamera.ScreenToWorldPoint(new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0)) - this.transform.position;
+            Debug.DrawRay(this.transform.position, grappleDirection, Color.red, 10);
+            //casts the acctual ray to whereever the mouse is on screen, ignores the player to stop bugs
+            m_grappleHit = Physics2D.Raycast(this.transform.position, grappleDirection, 10, m_grappleLayerMask);
+        }
     }
 
-    /// <header> Charecter Inputs </header>
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.name == "Barriers")//when player hit platform grapple retracts
+        {
+            m_grappling = false;
+            m_grappleHit = new RaycastHit2D();
+        }
+    }
 
     /// <summary>
     /// This defines how the player moves
@@ -104,7 +148,6 @@ public class CharacterController : MonoBehaviour
         {
             m_playerDirection = Vector2.zero;
         }
-       
     }
 
     /// <summary>
@@ -139,20 +182,53 @@ public class CharacterController : MonoBehaviour
 
     public void HandleMaskSwitchDJump(InputAction.CallbackContext ctx)
     {
-        m_maskState = MaskState.doubleJump;
-        Debug.Log("double jump");
+        if (ctx.performed)
+        {
+            m_maskState = MaskState.doubleJump;
+            Debug.Log("double jump");
+            m_disableDisappearingTiles.Invoke();
+        }
     }
 
     public void HandleMaskSwitchGrapple(InputAction.CallbackContext ctx)
     {
-        m_maskState = MaskState.grapple;
-        Debug.Log("grapple");
+        if (ctx.performed)
+        {
+            m_maskState = MaskState.grapple;
+            Debug.Log("grapple");
+            m_disableDisappearingTiles.Invoke();
+        }
     }
 
     public void HandleMaskSwitchWall(InputAction.CallbackContext ctx)
     {
-        m_maskState = MaskState.wallTangibility;
-        Debug.Log("wall");
+        if (ctx.performed)
+        {
+            m_maskState = MaskState.wallTangibility;
+            Debug.Log("wall");
+            m_enableDisappearingTiles.Invoke();
+        }
+    }
+
+    public void HandleInteract(InputAction.CallbackContext ctx)
+    {
+        if(ctx.started)
+        {
+            if (m_maskState == MaskState.wallTangibility)
+            {
+                m_toggleDisappearingTiles.Invoke();
+            }
+            Debug.Log("interact");
+        }
+    }
+
+    /// <summary>
+    /// when grapple pressed, grapples appropriately
+    /// </summary>
+    /// <param name="ctx"></param>
+    public void GrappleInput(InputAction.CallbackContext ctx)
+    {
+        m_grappling = true;
     }
 
 }
