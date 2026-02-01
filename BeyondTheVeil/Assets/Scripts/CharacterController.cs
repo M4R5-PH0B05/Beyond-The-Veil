@@ -203,14 +203,19 @@ public class CharacterController : MonoBehaviour
             m_maskState = MaskState.doubleJump;
             Destroy(collision.gameObject);
         }
-        if (collision.gameObject.tag == "wallTangibilityMask")
+        else if (collision.gameObject.tag == "wallTangibilityMask")
         {
             m_maskState = MaskState.wallTangibility;
             Destroy(collision.gameObject);
         }
-        if (collision.gameObject.tag == "grappleMask")
+        else if (collision.gameObject.tag == "grappleMask")
         {
             m_maskState = MaskState.grapple;
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.tag == "climbMask")
+        {
+            m_maskState = MaskState.climbingmask;
             Destroy(collision.gameObject);
         }
     }
