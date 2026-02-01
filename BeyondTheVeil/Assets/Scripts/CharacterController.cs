@@ -185,6 +185,10 @@ public class CharacterController : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, grappleController.m_grappleHit.point, 15f * Time.deltaTime);
         }
+        else if (grappleController.m_grappling == false || grappleController.m_grappleHit.distance == 0)
+        {
+            grappleController.SetActiveFalse();
+        }
         
     }
 
