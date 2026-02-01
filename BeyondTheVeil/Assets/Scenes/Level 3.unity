@@ -868,7 +868,7 @@ GameObject:
   - component: {fileID: 1445176271}
   - component: {fileID: 1445176270}
   m_Layer: 0
-  m_Name: Level3Exit
+  m_Name: Level4Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

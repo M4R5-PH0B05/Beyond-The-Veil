@@ -204,7 +204,6 @@ public class CharacterController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        print("help");
         HandleDoorExits(collision);
         HandleMaskPickups(collision);
         if (collision.gameObject.tag == "climbable" )
