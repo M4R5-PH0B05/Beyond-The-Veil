@@ -1446,6 +1446,7 @@ GameObject:
   - component: {fileID: 800080824}
   - component: {fileID: 800080823}
   - component: {fileID: 800080822}
+  - component: {fileID: 800080826}
   m_Layer: 5
   m_Name: FadePanel
   m_TagString: Untagged
@@ -1514,7 +1515,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &800080825
 RectTransform:
@@ -1536,6 +1537,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+<<<<<<< Updated upstream
 --- !u!1 &828312890
 GameObject:
   m_ObjectHideFlags: 0
@@ -1574,11 +1576,15 @@ RectTransform:
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &828312892
+=======
+--- !u!114 &800080826
+>>>>>>> Stashed changes
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+<<<<<<< Updated upstream
   m_GameObject: {fileID: 828312890}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -1674,6 +1680,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 828312890}
   m_CullTransparentMesh: 1
+=======
+  m_GameObject: {fileID: 800080821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63fa66d338227524985f1d04f90a64b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeImage: {fileID: 90713642}
+  fadeTime: 0.6
+>>>>>>> Stashed changes
 --- !u!1 &998879075
 GameObject:
   m_ObjectHideFlags: 0
