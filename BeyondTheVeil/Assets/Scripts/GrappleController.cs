@@ -12,9 +12,9 @@ public class GrappleController : MonoBehaviour
 
     public RaycastHit2D m_grappleHit;
     public bool m_grappling = false;
-    
 
-    
+   
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
