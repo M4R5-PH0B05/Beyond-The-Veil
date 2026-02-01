@@ -51,7 +51,7 @@ public class CharacterController : MonoBehaviour
     /// <summary>
     /// The currently selectedMask
     /// </summary>
-    private MaskState m_maskState;
+    public MaskState m_maskState;
 
     /// <summary>
     /// Defined for the velocity player jumps 
@@ -82,6 +82,7 @@ public class CharacterController : MonoBehaviour
     private DisappearingTileManager m_disappearingTileManager;
 
     [SerializeField] private GrappleController grappleController;
+    [SerializeField] private MaskController maskController;
 
     /// <summary>
     /// jump counter, for when double jump mask is equipped it increases.
@@ -104,7 +105,7 @@ public class CharacterController : MonoBehaviour
     /// set true/false when climbing is true
     /// </summary>
     private bool isclimbing = false;
-    private float m_currentVelY;
+    
    
    
 
@@ -131,6 +132,8 @@ public class CharacterController : MonoBehaviour
 
         m_layerMask = LayerMask.GetMask("Default");
         m_playerAnimation = GetComponent<Animator>();
+
+        m_MainCamera = GetComponent<Camera>();
     }
 
     /// <summary>
@@ -347,9 +350,10 @@ public class CharacterController : MonoBehaviour
 
     public void HandleMaskSwitchDJump(InputAction.CallbackContext ctx)
     {
-            m_maskState = MaskState.doubleJump;
-            grappleController.m_maskState = MaskState.doubleJump;
-            m_disableDisappearingTiles.Invoke();
+        m_maskState = MaskState.doubleJump;
+        grappleController.m_maskState = MaskState.doubleJump;
+        maskController.CurrentMask();
+        m_disableDisappearingTiles.Invoke();
     }
 
     public void HandleMaskSwitchGrapple(InputAction.CallbackContext ctx)
@@ -357,6 +361,7 @@ public class CharacterController : MonoBehaviour
         m_maskState = MaskState.grapple;
         Debug.Log("Grapple Selected");
         grappleController.m_maskState = MaskState.grapple;
+        maskController.CurrentMask();
         m_disableDisappearingTiles.Invoke();
     }
 
@@ -364,12 +369,14 @@ public class CharacterController : MonoBehaviour
     {
             m_maskState = MaskState.wallTangibility;
             grappleController.m_maskState = MaskState.wallTangibility;
-            m_enableDisappearingTiles.Invoke();
+        maskController.CurrentMask();
+        m_enableDisappearingTiles.Invoke();
     }
     public void HandleMaskClimbing(InputAction.CallbackContext ctx)
     {
         m_maskState = MaskState.climbingmask;
         grappleController.m_maskState = MaskState.climbingmask;
+        maskController.CurrentMask();
         m_enableDisappearingTiles.Invoke();
         
     }
