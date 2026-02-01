@@ -9,6 +9,7 @@ TagManager:
   - doubleJumpMask
   - grappleMask
   - climbable
+  - climbMask
   layers:
   - Default
   - TransparentFX
