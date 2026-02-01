@@ -93,13 +93,21 @@ public class CustomSceneManagerScript : MonoBehaviour
             // Wait before loading new scene 
             yield return new WaitForSeconds(titleMusic.FadeOutTime);
         }
+
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        while (!asyncLoad.isDone)//doesnt finish loading scene until certain actions are done for smooth transitions
-        {
+        while (!asyncLoad.isDone)
             yield return null;
-        }
-        m_player.transform.position = spawnPosition;
+
+        // Re-find player in the new scene
+        m_player = GameObject.Find("Player");
+        if (m_player != null)
+            m_player.transform.position = spawnPosition;
+
         CheckIfPlayerShouldBeActive();
+
+        if (ScreenFader.Instance != null)
+            yield return ScreenFader.Instance.FadeTo(0f);
+
         m_CR_LoadLevelRunning = null;
     }
 }
