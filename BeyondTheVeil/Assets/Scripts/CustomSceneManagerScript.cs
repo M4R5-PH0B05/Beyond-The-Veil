@@ -8,6 +8,9 @@ public class CustomSceneManagerScript : MonoBehaviour
     public string m_sceneName;
     public Camera m_currentCamera;
     public Vector3 m_level1SpawnPosition = new Vector3(0,0,0);
+    public Vector3 m_level2SpawnPosition = new Vector3(0,0,0);
+    public Vector3 m_level3SpawnPosition = new Vector3(0,0,0);
+    public Vector3 m_level4SpawnPosition = new Vector3(0,0,0);
     private Coroutine m_CR_LoadLevelRunning;
 
     private void Awake()
@@ -79,10 +82,11 @@ public class CustomSceneManagerScript : MonoBehaviour
     {
         // I added this, sorry if its shit - Morgan
         // Find the music 
-        SceneMusic titleMusic = GameObject.Find("TitleMusic").GetComponent<SceneMusic>(); 
-        // Check music is playing
-        if (titleMusic != null)
-        {
+
+        if(GameObject.Find("TitleMusic") !=null )
+        { 
+            SceneMusic titleMusic = GameObject.Find("TitleMusic").GetComponent<SceneMusic>(); 
+            // Check music is playing
             Debug.Log("Fading");
             // Fade it out 
             titleMusic.FadeOut();
