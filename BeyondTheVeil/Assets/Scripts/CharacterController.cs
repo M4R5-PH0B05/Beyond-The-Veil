@@ -8,6 +8,7 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static CharacterController;
 
 public class CharacterController : MonoBehaviour
@@ -23,7 +24,10 @@ public class CharacterController : MonoBehaviour
         wallTangibility = 3,
         climbingmask = 4,
     }
-
+    [SerializeField] private Image djumpmask;
+    [SerializeField] private Image grapplemask;
+    [SerializeField] private Image wallTangibilitymask;
+    [SerializeField] private Image climbingmask;
     private bool doubleJumpCollected;
     private bool grappleCollected;
     private bool wallTangibilityCollected;
@@ -134,6 +138,11 @@ public class CharacterController : MonoBehaviour
 
         m_layerMask = LayerMask.GetMask("Default");
         m_playerAnimation = GetComponent<Animator>();
+        djumpmask.fillAmount = 0;
+        wallTangibilitymask.fillAmount = 0;
+        climbingmask.fillAmount = 0;
+        grapplemask.fillAmount = 0;
+
 
         
     }
@@ -235,6 +244,7 @@ public class CharacterController : MonoBehaviour
             m_maskState = MaskState.doubleJump;
             doubleJumpCollected = true;
             Destroy(collision.gameObject);
+            djumpmaskactive();
         }
         else if (collision.gameObject.tag == "wallTangibilityMask")
         {
@@ -243,6 +253,7 @@ public class CharacterController : MonoBehaviour
             m_maskState = MaskState.wallTangibility;
             wallTangibilityCollected = true;
             Destroy(collision.gameObject);
+            walltangibilitymask();
         }
         else if (collision.gameObject.tag == "grappleMask")
         {
@@ -251,6 +262,7 @@ public class CharacterController : MonoBehaviour
             m_maskState = MaskState.grapple;
             grappleCollected = true;
             Destroy(collision.gameObject);
+            grapplemaskactive();
         }
         else if (collision.gameObject.tag == "climbMask")
         {
@@ -259,6 +271,7 @@ public class CharacterController : MonoBehaviour
             m_maskState = MaskState.climbingmask;
             climbingmaskCollected = true;
             Destroy(collision.gameObject);
+            climbmaskactive();
         }
     }
 
@@ -436,6 +449,7 @@ public class CharacterController : MonoBehaviour
             grappleController.m_maskState = MaskState.doubleJump;
             maskController.CurrentMask();
             m_disableDisappearingTiles.Invoke();
+            djumpmaskactive();
         }
     }
 
@@ -449,6 +463,7 @@ public class CharacterController : MonoBehaviour
             grappleController.m_maskState = MaskState.grapple;
             maskController.CurrentMask();
             m_disableDisappearingTiles.Invoke();
+            
         }
     }
 
@@ -461,6 +476,7 @@ public class CharacterController : MonoBehaviour
             grappleController.m_maskState = MaskState.wallTangibility;
             maskController.CurrentMask();
             m_enableDisappearingTiles.Invoke();
+            walltangibilitymask();
         }
     }
     public void HandleMaskClimbing(InputAction.CallbackContext ctx)
@@ -472,6 +488,7 @@ public class CharacterController : MonoBehaviour
             grappleController.m_maskState = MaskState.climbingmask;
             maskController.CurrentMask();
             m_disableDisappearingTiles.Invoke();
+            climbmaskactive();
         }
         
     }
@@ -493,7 +510,22 @@ public class CharacterController : MonoBehaviour
             Debug.Log("Grappling");
         }
     }
-
+    public void djumpmaskactive()
+    {
+        djumpmask.fillAmount = 1;
+    }
+    public void climbmaskactive()
+    {
+        climbingmask.fillAmount = 1;
+    }
+    public void grapplemaskactive()
+    {
+        grapplemask.fillAmount = 1;
+    }
+    public void walltangibilitymask()
+    {
+        wallTangibilitymask.fillAmount = 1;
+    }
     IEnumerator CR_WaitForJumpAmim()
     {
         yield return new WaitForSeconds(0.5f);
