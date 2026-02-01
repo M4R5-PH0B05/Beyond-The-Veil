@@ -103,10 +103,13 @@ public class CharacterController : MonoBehaviour
     /// <summary>
     /// set true/false when climbing is true
     /// </summary>
-    private bool isclimbing = false;
+    private bool isClimbing = false;
     private float m_currentVelY;
-   
-   
+    private Coroutine m_CR_AddingForce;
+    private float ClimbTapCoolDown;
+    private GameObject m_customSceneManager;
+
+
 
     [SerializeField] public Camera m_MainCamera;
 
@@ -146,6 +149,10 @@ public class CharacterController : MonoBehaviour
         {
             grappleController = GameObject.Find("Grapple").GetComponent<GrappleController>();
         }
+        if (GameObject.Find("CustomSceneManager"))
+        {
+            m_customSceneManager = GameObject.Find("CustomSceneManager");
+        }
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -170,8 +177,6 @@ public class CharacterController : MonoBehaviour
     private void FixedUpdate()
     {
         m_playerAnimation.SetFloat("VelocityY", m_playerRB2D.linearVelocityY);
-        
-
         //adds the move to position
         transform.position += new Vector3(m_playerDirection.x * m_moveSpeed, m_playerDirection.y * m_moveSpeed, 0);
         //Grapples to appropriate position while player grappling is true
@@ -179,15 +184,30 @@ public class CharacterController : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, grappleController.m_grappleHit.point, 15f * Time.deltaTime);
         }
-        
+        ClimbTapCoolDown += Time.deltaTime;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         HandleMaskPickups(collision);
-        
+        CheckExitDoorCollisions(collision);
     }
-   
+
+    private void CheckExitDoorCollisions(Collider2D collision)
+    {
+        if (collision.gameObject.name == "Level1ExitDoor")
+        {
+            m_customSceneManager.GetComponent<CustomSceneManagerScript>().StartSwapSceneCoroutine("Level 2", m_customSceneManager.GetComponent<CustomSceneManagerScript>().m_level2SpawnPosition);
+        }
+        else if (collision.gameObject.name == "Level2ExitDoor")
+        {
+            m_customSceneManager.GetComponent<CustomSceneManagerScript>().StartSwapSceneCoroutine("Level 3", m_customSceneManager.GetComponent<CustomSceneManagerScript>().m_level3SpawnPosition);
+        }
+        else if (collision.gameObject.name == "Level3ExitDoor")
+        {
+            m_customSceneManager.GetComponent<CustomSceneManagerScript>().StartSwapSceneCoroutine("Level 4", m_customSceneManager.GetComponent<CustomSceneManagerScript>().m_level4SpawnPosition);
+        }
+    }
 
     /// <summary>
     /// On collision with an object if it is a mask stores and quips the appropriate mask
@@ -237,30 +257,25 @@ public class CharacterController : MonoBehaviour
             }
 
         }
-        
         else if (ctx.canceled)
         {
             m_playerDirection = Vector2.zero;
             //Animation
             m_playerAnimation.SetBool("Idle", true);
-            
-
         }
      
     }
     public void HandleClimbing(InputAction.CallbackContext ctx)
     {
-        if (m_maskState == MaskState.climbingmask && !ctx.canceled && isclimbing == true)
+        if (m_maskState == MaskState.climbingmask && isClimbing == true && ClimbTapCoolDown > 0.01f)
         {
-            m_playerDirection.y = m_playerDirection.y + (850f * Time.deltaTime);
+            m_playerRB2D.AddForce(new Vector2(0, 1.1f), ForceMode2D.Impulse);
+            ClimbTapCoolDown = 0;
         }
-   
         else if (ctx.canceled)
         {
             m_playerDirection.y = 0;
         }
-        
-        
     }
 
     /// <summary>
@@ -271,8 +286,6 @@ public class CharacterController : MonoBehaviour
     {
         if (Cr_HandleJumpInstance == null && m_jumpCounter >= 1)
         {
-           
-            
             Cr_HandleJumpInstance = StartCoroutine(CR_HandleJump(ctx));
             m_playerAnimation.SetBool("Jumping", true);
             m_playerAnimation.SetBool("Grounded", false);
@@ -284,7 +297,6 @@ public class CharacterController : MonoBehaviour
             {
                 m_jumpCounter--;
             }
-                
         }
     }
 
@@ -328,11 +340,6 @@ public class CharacterController : MonoBehaviour
                 }
             }
         }
-        if (collision.gameObject.tag == "climbable" && m_maskState == MaskState.climbingmask)
-        {
-            isclimbing = true;
-
-        }
 
 
     }
@@ -340,8 +347,26 @@ public class CharacterController : MonoBehaviour
     {
         if (collision.gameObject.tag == "climbable")
         {
-            isclimbing = false;
+            isClimbing = false;
             m_playerDirection.y = m_playerDirection.y / 2;
+        }
+    }
+
+    
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "climbable" && m_maskState == MaskState.climbingmask)
+        {
+            isClimbing = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "climbable" && m_maskState == MaskState.climbingmask)
+        {
+            isClimbing = false;
         }
     }
 
@@ -366,8 +391,10 @@ public class CharacterController : MonoBehaviour
             grappleController.m_maskState = MaskState.wallTangibility;
             m_enableDisappearingTiles.Invoke();
     }
+
     public void HandleMaskClimbing(InputAction.CallbackContext ctx)
     {
+        Debug.Log("Can do climbing now");
         m_maskState = MaskState.climbingmask;
         grappleController.m_maskState = MaskState.climbingmask;
         m_enableDisappearingTiles.Invoke();
