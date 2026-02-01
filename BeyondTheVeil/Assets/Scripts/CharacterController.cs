@@ -133,7 +133,7 @@ public class CharacterController : MonoBehaviour
         m_layerMask = LayerMask.GetMask("Default");
         m_playerAnimation = GetComponent<Animator>();
 
-        m_MainCamera = GetComponent<Camera>();
+        
     }
 
     /// <summary>
@@ -156,6 +156,7 @@ public class CharacterController : MonoBehaviour
     {
         InitialiseDisappearingTileEvents();
         maskController.CurrentMask();
+        m_MainCamera = GetComponentInChildren<Camera>();
     }
 
     /// <summary>
