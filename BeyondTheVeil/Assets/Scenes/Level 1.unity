@@ -3443,10 +3443,10 @@ MonoBehaviour:
     rid: 5204879164400467969
   m_ShadowCastingSource: 2
   m_ShadowMesh:
-    m_Mesh: {fileID: 54961753}
+    m_Mesh: {fileID: 537705962}
     m_LocalBounds:
-      m_Center: {x: 4, y: 0.5, z: 0}
-      m_Extent: {x: 5, y: 0.5, z: 0}
+      m_Center: {x: 10.5, y: -0.5, z: 0}
+      m_Extent: {x: 18.5, y: 6.5, z: 0}
     m_EdgeProcessing: 1
     m_TrimEdge: 0
     m_FlipX: 0
